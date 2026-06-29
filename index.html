@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>건강 코드 (Health Code) - 프로토타입 V4 (랭킹 추가)</title>
+  <title>건강 코드 (Healthy Code) - 실전형 프로토타입 V5.1</title>
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
   <style>
     @import url('https://cdn.jsdelivr.net/gh/orioncactus/pretendard/dist/web/static/pretendard.css');
@@ -18,7 +18,6 @@
       --gold: #FFD700;
       --silver: #C0C0C0;
       --bronze: #CD7F32;
-      
       
       --glass-bg: rgba(255, 255, 255, 0.65);
       --glass-card-bg: rgba(255, 255, 255, 0.75);
@@ -37,7 +36,7 @@
       background-size: cover; color: var(--text-dark);
     }
 
-    /* 디바이스 목업 프레임 */
+    /* 디바이스 프레임 */
     .device-container {
       position: relative; width: 360px; height: 740px; border-radius: 44px;
       border: 9px solid var(--white);
@@ -60,7 +59,7 @@
     .screen-wrapper { flex: 1; position: relative; width: 100%; height: calc(100% - 100px); }
 
     .app-screen {
-      display: none; width: 100%; height: 100%; padding: 10px 18px 90px;
+      display: none; width: 100%; height: 100%; padding: 10px 18px 100px; /* 하단 여백 확보 */
       overflow-y: auto; position: absolute; top: 0; left: 0;
     }
     .app-screen.active { display: block; animation: fadeIn 0.35s ease forwards; }
@@ -68,12 +67,14 @@
     
     @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
 
-   
+    /* 글래스 컴포넌트 */
     .glass-card {
       background: var(--glass-card-bg); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px);
       border: 1px solid var(--glass-border); border-radius: 24px; padding: 18px; margin-bottom: 14px;
       box-shadow: var(--glass-shadow); transition: transform 0.2s ease;
     }
+    .interactive-card { cursor: pointer; }
+    .interactive-card:active { transform: scale(0.98); }
 
     .screen-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 20px; margin-top: 6px; }
     .screen-title h2 { font-size: 22px; font-weight: 700; margin-top: 2px; }
@@ -93,7 +94,7 @@
     .badge-solid { background: var(--primary); color: var(--white); border: none; }
     .badge-red { background: rgba(255, 94, 126, 0.1); color: var(--accent-red); border-color: rgba(255, 94, 126, 0.3); }
 
-    
+    /* 리스트 및 버튼 UI */
     .item-row {
       display: flex; align-items: center; gap: 12px; background: rgba(255, 255, 255, 0.5);
       padding: 14px; border-radius: 18px; margin-top: 12px; border: 1px solid rgba(255,255,255,0.7);
@@ -109,8 +110,7 @@
     .item-details h4 { font-size: 14px; font-weight: 700; margin-bottom: 2px; }
     .item-details p { font-size: 11px; color: var(--text-muted); }
 
-    
-    .check-btn { font-size: 26px; color: #cbd5e1; cursor: pointer; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+    .check-btn { font-size: 26px; color: #cbd5e1; cursor: pointer; transition: all 0.3s ease; }
     .check-btn.active-check { color: var(--primary); transform: scale(1.15); }
     
     .action-btn {
@@ -119,6 +119,7 @@
       cursor: pointer; box-shadow: 0 6px 16px rgba(79, 107, 231, 0.25); transition: all 0.2s; width: 100%;
     }
     .action-btn:active { transform: scale(0.96); }
+    .action-btn:disabled { opacity: 0.7; cursor: not-allowed; transform: none; }
     .action-btn.secondary { background: var(--white); color: var(--primary); border: 1px solid var(--primary); box-shadow: none; }
 
     .toggle-switch {
@@ -132,25 +133,25 @@
     }
     .toggle-switch:checked::before { transform: translateX(16px); }
 
-  
+    /* 토스트 팝업 */
     .toast-popup {
       position: absolute; bottom: 90px; left: 50%; transform: translate(-50%, 20px);
       background: rgba(30, 37, 66, 0.9); backdrop-filter: blur(10px); color: var(--white);
       padding: 12px 24px; border-radius: 30px; font-size: 13px; font-weight: 500;
-      opacity: 0; visibility: hidden; transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      opacity: 0; visibility: hidden; transition: all 0.3s ease;
       z-index: 2000; white-space: nowrap; display: flex; align-items: center; gap: 8px;
-      box-shadow: 0 10px 25px rgba(0,0,0,0.15);
     }
     .toast-popup.show { opacity: 1; visibility: visible; transform: translate(-50%, 0); }
 
- 
+    /* 차트 및 프로그레스 */
     .progress-bar-container { height: 6px; background: rgba(0, 0, 0, 0.05); border-radius: 10px; overflow: hidden; margin-top: 6px; }
-    .progress-fill { height: 100%; border-radius: 10px; transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1); }
+    .progress-fill { height: 100%; border-radius: 10px; transition: width 0.4s ease; }
     
     .bar-chart-wrap { display: flex; align-items: flex-end; justify-content: space-between; height: 50px; margin-top: 15px; }
     .chart-bar { width: 14px; background: rgba(79, 107, 231, 0.2); border-radius: 4px 4px 0 0; position: relative; }
     .chart-bar.active { background: var(--primary); }
 
+    /* 하단 네비게이션 */
     .bottom-navbar {
       position: absolute; bottom: 16px; left: 16px; right: 16px; height: 64px;
       background: var(--glass-bg); backdrop-filter: blur(24px); -webkit-backdrop-filter: blur(24px);
@@ -175,20 +176,19 @@
   <div class="device-container">
     <div class="notch"></div>
     <div class="status-bar">
-      <span id="system-clock">09:41 AM</span>
+      <span id="system-clock">00:00 AM</span>
       <div class="status-icons"><i class="ti ti-signal-4g"></i> <i class="ti ti-wifi"></i> <i class="ti ti-battery-filled"></i></div>
     </div>
 
     <div id="toast-msg" class="toast-popup">
-      <i class="ti ti-check"></i> <span>알림 메시지</span>
+      <i class="ti ti-check"></i> <span id="toast-text">알림 메시지</span>
     </div>
 
     <div class="screen-wrapper">
       
-      
       <div id="screen-home" class="app-screen active">
         <div class="screen-header">
-          <div class="screen-title"><p id="home-date">오늘, 5월 19일</p><h2>안녕하세요, 서윤님</h2></div>
+          <div class="screen-title"><p id="home-date">오늘의 기록</p><h2>안녕하세요, 서윤님</h2></div>
           <div class="user-avatar">윤</div>
         </div>
 
@@ -197,13 +197,13 @@
           <div style="display:flex; align-items:center; gap:20px;">
             <svg width="76" height="76" viewBox="0 0 64 64" style="transform: rotate(-90deg);">
               <circle cx="32" cy="32" r="27" fill="none" stroke="rgba(79,107,231,0.15)" stroke-width="5"/>
-              <circle cx="32" cy="32" r="27" fill="none" stroke="var(--primary)" stroke-width="5" stroke-dasharray="170" stroke-dashoffset="45" stroke-linecap="round"/>
+              <circle cx="32" cy="32" r="27" fill="none" stroke="var(--primary)" stroke-width="5" stroke-dasharray="170" stroke-dashoffset="45" stroke-linecap="round" id="circle-cal"/>
               <circle cx="32" cy="32" r="19" fill="none" stroke="rgba(79,107,231,0.15)" stroke-width="4.5"/>
               <circle cx="32" cy="32" r="19" fill="none" stroke="var(--primary-light)" stroke-width="4.5" stroke-dasharray="120" stroke-dashoffset="35" stroke-linecap="round"/>
             </svg>
             <div style="flex:1; display:flex; flex-direction:column; gap:8px;">
               <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:700;">
-                <span style="color:var(--primary);"><i class="ti ti-flame"></i> 칼로리</span><span>420 <span style="font-weight:400; font-size:11px;">kcal</span></span>
+                <span style="color:var(--primary);"><i class="ti ti-flame"></i> 칼로리</span><span><span id="total-cal">0</span> <span style="font-weight:400; font-size:11px;">kcal</span></span>
               </div>
               <div style="display:flex; justify-content:space-between; font-size:12px; font-weight:700;">
                 <span style="color:var(--primary-light);"><i class="ti ti-shoe"></i> 걸음수</span><span>7,234 <span style="font-weight:400; font-size:11px;">보</span></span>
@@ -224,11 +224,11 @@
               <div style="width:3px; background:var(--accent-red); border-radius:2px; height:40%;"></div>
             </div>
           </div>
-          <div class="glass-card">
-            <div style="font-size:11px; color:var(--text-muted); font-weight:600;">오늘의 수분 섭취</div>
-            <div style="font-size:24px; font-weight:700; color:var(--primary); margin-top:4px;">1.4 <span style="font-size:11px; font-weight:400; color:var(--text-muted);">L</span></div>
-            <div style="font-size:10px; color:var(--text-muted); text-align:right; margin-top:4px;">목표 2L (70%)</div>
-            <div class="progress-bar-container"><div class="progress-fill" style="width: 70%; background: var(--primary);"></div></div>
+          <div class="glass-card interactive-card" id="water-card" title="클릭하여 수분 추가">
+            <div style="font-size:11px; color:var(--text-muted); font-weight:600;">오늘의 수분 섭취 (클릭)</div>
+            <div style="font-size:24px; font-weight:700; color:var(--primary); margin-top:4px;"><span id="water-text">0.0</span> <span style="font-size:11px; font-weight:400; color:var(--text-muted);">L</span></div>
+            <div style="font-size:10px; color:var(--text-muted); text-align:right; margin-top:4px;">목표 2.0L (<span id="water-percent">0</span>%)</div>
+            <div class="progress-bar-container"><div id="water-bar" class="progress-fill" style="width: 0%; background: var(--primary);"></div></div>
           </div>
         </div>
 
@@ -292,7 +292,7 @@
       <div id="screen-diet" class="app-screen">
          <div class="screen-header">
           <div class="screen-title"><p>영양 성분 DB 연동</p><h2>식단 기록</h2></div>
-          <span class="badge badge-red">1,840 / 2,200 kcal</span>
+          <span class="badge badge-red">권장 2,200 kcal</span>
         </div>
         
         <div class="glass-card">
@@ -300,17 +300,14 @@
             <div style="flex:1; text-align:center;">
               <div style="font-size:10px; color:var(--text-muted);">탄수화물</div>
               <div class="progress-bar-container"><div class="progress-fill" style="width:75%; background:var(--primary);"></div></div>
-              <div style="font-size:12px; font-weight:700; margin-top:4px;">224g</div>
             </div>
             <div style="flex:1; text-align:center;">
               <div style="font-size:10px; color:var(--text-muted);">단백질</div>
               <div class="progress-bar-container"><div class="progress-fill" style="width:60%; background:var(--accent-red);"></div></div>
-              <div style="font-size:12px; font-weight:700; margin-top:4px;">88g</div>
             </div>
             <div style="flex:1; text-align:center;">
               <div style="font-size:10px; color:var(--text-muted);">지방</div>
               <div class="progress-bar-container"><div class="progress-fill" style="width:50%; background:var(--accent-orange);"></div></div>
-              <div style="font-size:12px; font-weight:700; margin-top:4px;">46g</div>
             </div>
           </div>
         </div>
@@ -325,17 +322,9 @@
         </div>
 
         <div id="diet-list">
-          <div class="item-row">
-            <div class="item-icon" style="background:#e4eaff;"><i class="ti ti-coffee"></i></div>
-            <div class="item-details">
-              <h4>아침 식단</h4><p>현미밥, 닭가슴살 샐러드</p>
-            </div>
-            <span style="font-size:12px; font-weight:700; color:var(--primary);">540 kcal</span>
           </div>
-        </div>
       </div>
 
-    
       <div id="screen-report" class="app-screen">
         <div class="screen-header">
           <div class="screen-title"><p>종합 데이터 시각화 분석</p><h2>건강 리포트</h2></div>
@@ -379,45 +368,42 @@
         <div style="text-align:center; margin:10px 0 24px;">
           <div class="user-avatar" style="width:72px; height:72px; font-size:28px; margin:0 auto 10px;">윤</div>
           <h3 style="font-size:20px; font-weight:700;">양서윤</h3>
-          <p style="font-size:12px; color:var(--primary); font-weight:600; margin-top:4px;">일반 / 국가보훈자 혜택 설정됨</p>
+          <p style="font-size:12px; color:var(--primary); font-weight:600; margin-top:4px;">일반 계정</p>
         </div>
         
         <div class="glass-card" style="padding:12px 18px;">
           <div style="font-size:11px; color:var(--text-muted); font-weight:700; margin:8px 0;">앱 기능 설정</div>
           <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid rgba(0,0,0,0.05);">
             <span style="font-size:14px; font-weight:600;">AI 음식 인식 활성화</span>
-            <input type="checkbox" class="toggle-switch setting-toggle" checked>
+            <input type="checkbox" id="setting-ai" class="toggle-switch setting-toggle" checked>
           </div>
           <div style="display:flex; justify-content:space-between; align-items:center; padding:12px 0; border-bottom:1px solid rgba(0,0,0,0.05);">
             <span style="font-size:14px; font-weight:600;">정시 복약 푸시 알림</span>
-            <input type="checkbox" class="toggle-switch setting-toggle" checked>
+            <input type="checkbox" id="setting-push" class="toggle-switch setting-toggle" checked>
           </div>
         </div>
 
-        <div class="glass-card" style="padding:14px 18px;">
+        <div class="glass-card interactive-card" id="btn-reset-data" style="padding:14px 18px;">
           <div style="display:flex; justify-content:space-between; align-items:center;">
-            <span style="font-size:14px; font-weight:700; color:var(--accent-red);">로그아웃</span>
-            <i class="ti ti-logout" style="color:var(--accent-red); font-size:18px;"></i>
+            <span style="font-size:14px; font-weight:700; color:var(--accent-red);">데이터 초기화 (테스트용)</span>
+            <i class="ti ti-trash" style="color:var(--accent-red); font-size:18px;"></i>
           </div>
         </div>
       </div>
 
-      
       <div id="screen-ranking" class="app-screen">
         <div class="screen-header">
           <div class="screen-title"><p>건강 지표 기반 소셜 시스템</p><h2>친구 랭킹</h2></div>
           <span class="badge badge-solid"><i class="ti ti-users"></i> 6명</span>
         </div>
         
-       
         <div class="glass-card" style="background:rgba(79, 107, 231, 0.08); border-color:var(--primary); padding:14px 18px;">
           <div style="display:flex; justify-content:space-between; align-items:center;">
             <div>
               <h4 style="font-size:14px; font-weight:700; color:var(--primary); margin-bottom:4px;">내 기록 공개하기</h4>
               <p style="font-size:11px; color:var(--text-muted);">친구들에게 내 건강 점수를 공유합니다.</p>
             </div>
-            
-            <input type="checkbox" id="rank-privacy-toggle" class="toggle-switch" checked>
+            <input type="checkbox" id="rank-privacy-toggle" class="toggle-switch setting-toggle" checked>
           </div>
         </div>
 
@@ -425,20 +411,16 @@
           <i class="ti ti-trophy"></i> 주간 건강 종합 점수 순위
         </div>
 
-        
         <div id="ranking-list" style="display:flex; flex-direction:column; gap:8px;">
-          
-          
           <div class="item-row" style="margin-top:0; padding:12px;">
             <div class="item-icon" style="color:var(--gold); font-size:24px; background:none; box-shadow:none;"><i class="ti ti-medal"></i></div>
-            <div class="user-avatar" style="width:36px; height:36px; font-size:14px; border-color:var(--gold);">성</div>
+            <div class="user-avatar" style="width:36px; height:36px; font-size:14px; border-color:var(--gold);">조</div>
             <div class="item-details" style="margin-left:4px;">
               <h4 style="font-size:14px;">조성철</h4><p>이번 주 랭킹 1위!</p>
             </div>
             <span style="font-size:15px; font-weight:700; color:var(--primary);">95<span style="font-size:10px; font-weight:500;">점</span></span>
           </div>
 
-          
           <div class="item-row" style="margin-top:0; padding:12px;">
             <div class="item-icon" style="color:var(--silver); font-size:24px; background:none; box-shadow:none;"><i class="ti ti-medal"></i></div>
             <div class="user-avatar" style="width:36px; height:36px; font-size:14px; border-color:var(--silver);">고</div>
@@ -448,7 +430,6 @@
             <span style="font-size:15px; font-weight:700; color:var(--primary);">92<span style="font-size:10px; font-weight:500;">점</span></span>
           </div>
 
-          
           <div class="item-row" style="margin-top:0; padding:12px; background:rgba(255,255,255,0.9); border: 2px solid var(--primary); box-shadow:0 4px 12px rgba(79,107,231,0.15);">
             <div class="item-icon" style="color:var(--bronze); font-size:24px; background:none; box-shadow:none;"><i class="ti ti-medal"></i></div>
             <div class="user-avatar" style="width:36px; height:36px; font-size:14px; background:var(--primary); color:white;">윤</div>
@@ -458,7 +439,6 @@
             <span style="font-size:15px; font-weight:700; color:var(--primary);">84<span style="font-size:10px; font-weight:500;">점</span></span>
           </div>
 
-          
           <div class="item-row" style="margin-top:0; padding:12px;">
             <div style="width:40px; text-align:center; font-size:16px; font-weight:700; color:var(--text-muted);">4</div>
             <div class="user-avatar" style="width:36px; height:36px; font-size:14px; border-color:rgba(0,0,0,0.1); color:var(--text-muted);">윤</div>
@@ -468,7 +448,6 @@
             <span style="font-size:15px; font-weight:700; color:var(--text-dark);">78<span style="font-size:10px; font-weight:500;">점</span></span>
           </div>
 
-          
           <div class="item-row" style="margin-top:0; padding:12px;">
             <div style="width:40px; text-align:center; font-size:16px; font-weight:700; color:var(--text-muted);">5</div>
             <div class="user-avatar" style="width:36px; height:36px; font-size:14px; border-color:rgba(0,0,0,0.1); color:var(--text-muted);">박</div>
@@ -478,7 +457,6 @@
             <span style="font-size:15px; font-weight:700; color:var(--text-dark);">74<span style="font-size:10px; font-weight:500;">점</span></span>
           </div>
 
-          
           <div class="item-row" style="margin-top:0; padding:12px;">
             <div style="width:40px; text-align:center; font-size:16px; font-weight:700; color:var(--text-muted);">6</div>
             <div class="user-avatar" style="width:36px; height:36px; font-size:14px; border-color:rgba(0,0,0,0.1); color:var(--text-muted);">한</div>
@@ -487,19 +465,17 @@
             </div>
             <span style="font-size:15px; font-weight:700; color:var(--text-dark);">68<span style="font-size:10px; font-weight:500;">점</span></span>
           </div>
-
         </div>
       </div>
 
     </div>
 
     <div class="bottom-navbar">
-      <div class="nav-item active" data-target="screen-home"><i class="ti ti-home"></i><div class="nav-indicator-dot"></div></div>
+      <div class="nav-item" data-target="screen-home"><i class="ti ti-home"></i><div class="nav-indicator-dot"></div></div>
       <div class="nav-item" data-target="screen-exercise"><i class="ti ti-run"></i><div class="nav-indicator-dot"></div></div>
       <div class="nav-item" data-target="screen-diet"><i class="ti ti-salad"></i><div class="nav-indicator-dot"></div></div>
       <div class="nav-item" data-target="screen-report"><i class="ti ti-chart-line"></i><div class="nav-indicator-dot"></div></div>
       <div class="nav-item" data-target="screen-profile"><i class="ti ti-user"></i><div class="nav-indicator-dot"></div></div>
-     
       <div class="nav-item" data-target="screen-ranking"><i class="ti ti-trophy"></i><div class="nav-indicator-dot"></div></div>
     </div>
   </div>
@@ -507,136 +483,179 @@
   <script>
     document.addEventListener('DOMContentLoaded', () => {
       
+      // [공통] 토스트 알림 
+      const toastPopup = document.getElementById('toast-msg');
+      const toastText = document.getElementById('toast-text');
+      let toastTimeout;
+      const showToast = (message, iconClass = 'ti-check') => {
+        toastPopup.innerHTML = `<i class="ti ${iconClass}"></i> <span>${message}</span>`;
+        toastPopup.classList.add('show');
+        clearTimeout(toastTimeout);
+        toastTimeout = setTimeout(() => toastPopup.classList.remove('show'), 2500);
+      };
+
+      // [기능 1] 라우팅 및 탭 메모리
       const navItems = document.querySelectorAll('.nav-item');
       const appScreens = document.querySelectorAll('.app-screen');
+      
+      const savedTab = localStorage.getItem('hc_activeTab') || 'screen-home';
 
+      const switchTab = (targetId) => {
+        navItems.forEach(nav => {
+          nav.classList.toggle('active', nav.getAttribute('data-target') === targetId);
+        });
+        appScreens.forEach(screen => {
+          if (screen.id === targetId) {
+            screen.style.display = 'block';
+            setTimeout(() => screen.classList.add('active'), 10);
+          } else {
+            screen.classList.remove('active');
+            screen.style.display = 'none';
+          }
+        });
+        localStorage.setItem('hc_activeTab', targetId);
+      };
+
+      // 초기 탭 로드
+      switchTab(savedTab);
+
+      // 탭 클릭 이벤트
       navItems.forEach(item => {
         item.addEventListener('click', () => {
           if (item.classList.contains('active')) return;
-          navItems.forEach(nav => nav.classList.remove('active'));
-          item.classList.add('active');
-          const targetScreenId = item.getAttribute('data-target');
-          
-          appScreens.forEach(screen => {
-            if (screen.id === targetScreenId) {
-              screen.style.display = 'block';
-              setTimeout(() => { screen.classList.add('active'); }, 10);
-            } else {
-              screen.classList.remove('active');
-              screen.style.display = 'none';
-            }
-          });
+          switchTab(item.getAttribute('data-target'));
         });
       });
 
-      function systemClockSync() {
+      // [기능 2] 시스템 시계 연동 
+      const systemClockSync = () => {
         const timeTarget = document.getElementById('system-clock');
-        if (!timeTarget) return;
         const d = new Date();
         let h = d.getHours();
         const m = String(d.getMinutes()).padStart(2, '0');
         const p = h >= 12 ? 'PM' : 'AM';
-        h = h % 12; h = h ? h : 12; 
-        timeTarget.innerText = `${String(h).padStart(2, '0')}:${m} ${p}`;
-      }
+        h = h % 12 || 12; 
+        if(timeTarget) timeTarget.innerText = `${String(h).padStart(2, '0')}:${m} ${p}`;
+        
+        const homeDate = document.getElementById('home-date');
+        if(homeDate) homeDate.innerText = `오늘, ${d.getMonth()+1}월 ${d.getDate()}일`;
+      };
       setInterval(systemClockSync, 1000); systemClockSync();
 
-      const toastPopup = document.getElementById('toast-msg');
-      let toastTimeout;
-      function showToast(message, iconClass) {
-        toastPopup.innerHTML = `<i class="${iconClass}"></i> <span>${message}</span>`;
-        toastPopup.classList.add('show');
-        clearTimeout(toastTimeout);
-        toastTimeout = setTimeout(() => { toastPopup.classList.remove('show'); }, 2500);
-      }
-
-      const medCheckBtn = document.getElementById('med-check-btn');
-      medCheckBtn.addEventListener('click', () => {
-        medCheckBtn.classList.toggle('active-check');
-        if(medCheckBtn.classList.contains('active-check')) {
-          showToast('복약 기록이 완료되었습니다!', 'ti ti-circle-check');
-        } else {
-          showToast('기록이 취소되었습니다!', 'ti ti-alert-circle');
-        }
-      });
-
-      const btnPause = document.getElementById('btn-pause');
-      const btnStop = document.getElementById('btn-stop');
-      const timeDisplay = document.getElementById('exercise-time');
-      let isRunning = true;
-      let exTimer; let min = 23; let sec = 47;
+      // [기능 3] 실시간 수분 섭취 인터랙션 
+      const waterCard = document.getElementById('water-card');
+      const waterText = document.getElementById('water-text');
+      const waterPercent = document.getElementById('water-percent');
+      const waterBar = document.getElementById('water-bar');
+      const MAX_WATER = 2.0;
       
-      function updateTimer() {
-        if(!isRunning) return;
-        sec++;
-        if(sec >= 60) { min++; sec = 0; }
-        timeDisplay.innerText = `${String(min).padStart(2,'0')}:${String(sec).padStart(2,'0')}`;
-      }
-      exTimer = setInterval(updateTimer, 1000);
+      let currentWater = parseFloat(localStorage.getItem('hc_water')) || 0.0;
 
-      btnPause.addEventListener('click', () => {
-        isRunning = !isRunning;
-        if(isRunning) {
-          btnPause.innerHTML = `<i class="ti ti-player-pause"></i> 일시정지`;
-          showToast('운동이 재개되었습니다.', 'ti ti-player-play');
-        } else {
-          btnPause.innerHTML = `<i class="ti ti-player-play"></i> 계속하기`;
-          showToast('운동이 일시정지 되었습니다.', 'ti ti-player-pause');
+      const updateWaterUI = () => {
+        waterText.innerText = currentWater.toFixed(1);
+        const percent = Math.min(Math.round((currentWater / MAX_WATER) * 100), 100);
+        waterPercent.innerText = percent;
+        waterBar.style.width = `${percent}%`;
+      };
+      updateWaterUI(); // 초기화
+
+      waterCard.addEventListener('click', () => {
+        if(currentWater >= MAX_WATER) {
+          showToast('오늘의 목표 수분을 달성했습니다!', 'ti-medal');
+          return;
         }
-      });
-      btnStop.addEventListener('click', () => {
-        isRunning = false; clearInterval(exTimer);
-        document.getElementById('exercise-badge').innerText = '종료됨';
-        showToast('러닝 세션이 저장되었습니다.', 'ti ti-device-floppy');
+        currentWater += 0.2;
+        localStorage.setItem('hc_water', currentWater.toFixed(1));
+        updateWaterUI();
+        showToast('수분 0.2L 섭취 기록 완료', 'ti-drop');
       });
 
+      // [기능 4] 식단 기록 및 총 칼로리 연동
+      const defaultDiet = [
+        { title: '아침 식단', desc: '현미밥, 닭가슴살 샐러드', cal: 540, icon: 'ti-coffee', bg: '#e4eaff', color: 'var(--primary)' }
+      ];
+      let dietData = JSON.parse(localStorage.getItem('hc_diets')) || defaultDiet;
+      const dietListEl = document.getElementById('diet-list');
+      const totalCalEl = document.getElementById('total-cal');
+
+      const renderDiets = () => {
+        dietListEl.innerHTML = '';
+        let totalCalories = 0;
+
+        dietData.forEach(diet => {
+          totalCalories += diet.cal;
+          const div = document.createElement('div');
+          div.className = 'item-row';
+          div.innerHTML = `
+            <div class="item-icon" style="background:${diet.bg}; color:${diet.color};"><i class="ti ${diet.icon}"></i></div>
+            <div class="item-details">
+              <h4>${diet.title}</h4><p>${diet.desc}</p>
+            </div>
+            <span style="font-size:12px; font-weight:700; color:var(--primary);">${diet.cal} kcal</span>
+          `;
+          dietListEl.appendChild(div);
+        });
+
+        // 홈 화면 칼로리 업데이트
+        if(totalCalEl) totalCalEl.innerText = totalCalories.toLocaleString();
+      };
+      renderDiets();
+
+      // AI 카메라 버튼
       const btnAiCamera = document.getElementById('btn-ai-camera');
-      const dietList = document.getElementById('diet-list');
       btnAiCamera.addEventListener('click', () => {
         btnAiCamera.disabled = true;
         btnAiCamera.innerHTML = `<i class="ti ti-loader ti-spin"></i> AI가 음식을 분석 중입니다...`;
         
         setTimeout(() => {
-          showToast('식단이 자동 입력되었습니다!', 'ti ti-camera-check');
+          const newDiet = {
+            title: '점심 식단 <span class="badge" style="background:var(--primary); color:white; padding:2px 6px;">AI</span>', 
+            desc: '소고기 쌀국수, 스프링롤 2개', 
+            cal: 820, 
+            icon: 'ti-tools-kitchen-2', 
+            bg: '#fff2e4', 
+            color: 'var(--accent-orange)'
+          };
+          dietData.push(newDiet);
+          localStorage.setItem('hc_diets', JSON.stringify(dietData));
+          
+          renderDiets();
+          showToast('식단이 추가되고 칼로리가 업데이트 되었습니다.', 'ti-camera-check');
+          
           btnAiCamera.innerHTML = `<i class="ti ti-camera-check"></i> 음식 사진 촬영 AI 자동 분석`;
           btnAiCamera.disabled = false;
-          
-          const newItem = document.createElement('div');
-          newItem.className = 'item-row';
-          newItem.style.opacity = '0';
-          newItem.style.transform = 'translateY(10px)';
-          newItem.innerHTML = `
-            <div class="item-icon" style="background:#fff2e4; color:var(--accent-orange);"><i class="ti ti-tools-kitchen-2"></i></div>
-            <div class="item-details">
-              <h4>점심 식단 <span class="badge" style="background:var(--primary); color:white; padding:2px 6px;">AI</span></h4>
-              <p>소고기 쌀국수, 스프링롤 2개</p>
-            </div>
-            <span style="font-size:12px; font-weight:700; color:var(--primary);">820 kcal</span>
-          `;
-          dietList.appendChild(newItem);
-          setTimeout(() => {
-            newItem.style.opacity = '1';
-            newItem.style.transform = 'translateY(0)';
-          }, 50);
-        }, 1500); 
-      });
-      const settingToggles = document.querySelectorAll('.setting-toggle');
-      settingToggles.forEach(toggle => {
-        toggle.addEventListener('change', () => {
-          showToast('설정이 성공적으로 저장되었습니다.', 'ti ti-settings-check');
-        });
-      });
-      const rankPrivacyToggle = document.getElementById('rank-privacy-toggle');
-      rankPrivacyToggle.addEventListener('change', (e) => {
-        if(e.target.checked) {
-          showToast('친구에게 내 기록이 공개됩니다.', 'ti ti-eye');
-        } else {
-          showToast('내 기록이 비공개로 전환되었습니다.', 'ti ti-eye-off');
-        }
+        }, 1200);
       });
 
+      // [기능 5] 설정 토글 로컬 스토리지 연동 
+      const settingToggles = document.querySelectorAll('.setting-toggle');
+      settingToggles.forEach(toggle => {
+        const savedState = localStorage.getItem(`hc_toggle_${toggle.id}`);
+        if (savedState !== null) toggle.checked = savedState === 'true';
+        
+        toggle.addEventListener('change', (e) => {
+          localStorage.setItem(`hc_toggle_${e.target.id}`, e.target.checked);
+          showToast('설정이 저장되었습니다.', 'ti-settings');
+        });
+      });
+
+      // [기타 인터랙션]
+      // 복약 체크
+      const medCheckBtn = document.getElementById('med-check-btn');
+      medCheckBtn.addEventListener('click', () => {
+        medCheckBtn.classList.toggle('active-check');
+        showToast(medCheckBtn.classList.contains('active-check') ? '복약 기록 완료' : '기록 취소', 'ti-pill');
+      });
+
+      // 데이터 초기화 버튼 (테스트용)
+      document.getElementById('btn-reset-data').addEventListener('click', () => {
+        if(confirm('테스트 데이터를 모두 초기화하시겠습니까?')) {
+          localStorage.clear();
+          location.reload();
+        }
+      });
+      
     });
   </script>
 </body>
 </html>
-
